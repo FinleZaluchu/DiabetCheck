@@ -13,10 +13,13 @@ def classify_glucose(level):
 def main():
     st.set_page_config(page_title="Cek Gula Darah", layout="wide")
     
-    pages = ["Input Gula Darah", "Hasil Analisis", "Saran Hidup Sehat"]
-    choice = st.sidebar.selectbox("Pilih Halaman", pages)
+    if "page" not in st.session_state:
+        st.session_state["page"] = "Input Gula Darah"
     
-    if choice == "Input Gula Darah":
+    pages = ["Input Gula Darah", "Hasil Analisis", "Saran Hidup Sehat"]
+    st.sidebar.selectbox("Pilih Halaman", pages, index=pages.index(st.session_state["page"]))
+    
+    if st.session_state["page"] == "Input Gula Darah":
         st.title("💉 Cek Kadar Gula Darah")
         st.markdown("Masukkan kadar gula darah Anda untuk mengetahui kategori kesehatan.")
         
@@ -24,9 +27,10 @@ def main():
         
         if st.button("Cek Hasil", use_container_width=True):
             st.session_state["glucose"] = glucose_level
-            st.success("Data tersimpan! Cek hasil di halaman 'Hasil Analisis'.")
+            st.session_state["page"] = "Hasil Analisis"
+            st.rerun()
     
-    elif choice == "Hasil Analisis":
+    elif st.session_state["page"] == "Hasil Analisis":
         st.title("📊 Hasil Analisis Gula Darah")
         if "glucose" in st.session_state:
             category, message = classify_glucose(st.session_state["glucose"])
@@ -34,8 +38,12 @@ def main():
             st.write(message)
         else:
             st.warning("Silakan masukkan kadar gula darah di halaman Input terlebih dahulu.")
+        
+        if st.button("Lihat Saran", use_container_width=True):
+            st.session_state["page"] = "Saran Hidup Sehat"
+            st.rerun()
     
-    elif choice == "Saran Hidup Sehat":
+    elif st.session_state["page"] == "Saran Hidup Sehat":
         st.title("💡 Saran Hidup Sehat")
         st.write("Berikut beberapa tips untuk menjaga kadar gula darah tetap sehat:")
         
@@ -51,6 +59,10 @@ def main():
             - 💤 **Tidur yang Berkualitas**: Usahakan tidur 7-9 jam per malam.
             - 🚫 **Kurangi Stres**: Lakukan meditasi atau aktivitas menyenangkan.
             """)
+        
+        if st.button("Mulai Ulang", use_container_width=True):
+            st.session_state["page"] = "Input Gula Darah"
+            st.rerun()
 
 if __name__ == "__main__":
     main()
