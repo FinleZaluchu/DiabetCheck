@@ -1,14 +1,24 @@
 import streamlit as st
 
-def classify_glucose(level):
-    if level < 70:
-        return "Hipoglikemia (Di Bawah Normal)", "⚠️ Kadar gula darah Anda terlalu rendah!"
-    elif 70 <= level <= 99:
-        return "Normal ✅", "Gula darah Anda dalam rentang normal. Pertahankan pola hidup sehat!"
-    elif 100 <= level <= 125:
-        return "Pra-diabetes ⚠️", "Anda berada di tahap pra-diabetes. Waspada dan mulai perbaiki gaya hidup."
-    else:
-        return "Diabetes 🆘", "Kadar gula darah tinggi! Segera konsultasikan dengan tenaga medis."
+def classify_glucose(level, condition):
+    if condition == "Setelah Puasa":
+        if level < 77:
+            return "Hipoglikemia (Di Bawah Normal)", "⚠️ Kadar gula darah Anda terlalu rendah!"
+        elif 77 <= level <= 99:
+            return "Normal ✅", "Gula darah Anda dalam rentang normal. Pertahankan pola hidup sehat!"
+        elif 100 <= level <= 125:
+            return "Pra-diabetes ⚠️", "Anda berada di tahap pra-diabetes. Waspada dan mulai perbaiki gaya hidup."
+        else:
+            return "Diabetes 🆘", "Kadar gula darah tinggi! Segera konsultasikan dengan tenaga medis."
+    elif condition in ["2 Jam Setelah Makan", "Random"]:
+        if level < 70:
+            return "Hipoglikemia (Di Bawah Normal)", "⚠️ Kadar gula darah Anda terlalu rendah!"
+        elif 70 <= level <= 139:
+            return "Normal ✅", "Gula darah Anda dalam rentang normal. Pertahankan pola hidup sehat!"
+        elif 140 <= level <= 199:
+            return "Pra-diabetes ⚠️", "Anda berada di tahap pra-diabetes. Waspada dan mulai perbaiki gaya hidup."
+        else:
+            return "Diabetes 🆘", "Kadar gula darah tinggi! Segera konsultasikan dengan tenaga medis."
 
 def main():
     st.set_page_config(page_title="Cek Gula Darah", layout="wide")
@@ -35,8 +45,8 @@ def main():
     
     elif st.session_state["page"] == "Hasil Analisis":
         st.title("📊 Hasil Analisis Gula Darah")
-        if "glucose" in st.session_state:
-            category, message = classify_glucose(st.session_state["glucose"])
+        if "glucose" in st.session_state and "test_condition" in st.session_state:
+            category, message = classify_glucose(st.session_state["glucose"], st.session_state["test_condition"])
             with st.expander(f"📌 {category}"):
                 st.write(message)
         else:
